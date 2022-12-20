@@ -1,0 +1,89 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main()
+{
+	//数列元素
+	const int seq_size = 18;
+	int elems_seq[seq_size] = {
+		1, 2, 3,
+		3, 4, 7,
+		2, 5, 12,
+		3, 6, 10,
+		4, 9, 16,
+		5, 12, 22
+	};
+	//数列类型
+	const int seq_name_size = 6;
+	string seq_name[seq_name_size] = {
+		"Fibonacci",
+		"Lucas",
+		"Pell",
+		"Triangular",
+		"Square",
+		"Pentagonal"
+	};
+	string user_name;
+	cout << "请输入你的名字:";
+	cin >> user_name;
+	int cur_tuple = 0;//记录当前数列
+	bool next_seq = true;//是否显示下一数列
+	int num_tries=0;//猜测次数
+	int num_right=0;//正确次数
+	double user_score;
+
+	while (next_seq == true && cur_tuple < seq_size)
+	{
+		bool got_it = false;//是否猜错
+		bool go_for_it = true;//是否继续
+		int max = 3;//每个数列的猜测次数
+		char user_again;//接收Y/N
+
+		while (got_it == false && go_for_it == true)
+		{
+			cout << "当前数列的前两项为:" << elems_seq[cur_tuple] << "," << elems_seq[cur_tuple + 1]
+				<< "你有" << max << "次机会\n"
+				<< "请猜测下一个数:";
+			int user_guess;
+			cin >> user_guess;
+			num_tries++;
+
+			if (user_guess == elems_seq[cur_tuple + 2])
+			{
+				cout << "恭喜你！猜对了,当前数列名为:" << seq_name[cur_tuple / 3] << "\n";
+				got_it = true;
+				num_right++;
+			}
+			else
+			{
+				max--;
+				if (max == 0)
+				{
+					cout << "当前数列机会用完\n";
+					break;
+				}
+				cout << "很遗憾你猜错了，是否继续猜测(Y/N):";
+				cin >> user_again;
+				if (user_again == 'N' || user_again == 'n')
+				{
+					go_for_it = false;
+				}
+			}
+		}
+		cout << "是否猜测下一个数列(Y/N):";
+		cin >> user_again;
+		if (user_again == 'N' || user_again == 'n')
+		{
+			next_seq = false;
+			cout << "退出游戏\n";
+		}
+		else
+		{
+			cur_tuple += 3;
+		}
+	}
+	user_score = (double)num_right / num_tries;
+	cout << user_name << "你的得分为:" << user_score << "\n";
+	return 0;
+}
