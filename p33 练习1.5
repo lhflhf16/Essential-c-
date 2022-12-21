@@ -1,0 +1,46 @@
+#include <string>
+#include <iostream>
+using namespace std;
+
+int main()
+{
+	bool go_on = true;
+	while (go_on == true)
+	{
+		string user_name;
+		cout << "请输入你的名字:";
+		cin >> user_name;
+		int size = user_name.size();
+		if (size >= 2)
+		{
+			if (user_name == "杨孟林" || user_name == "妹妹")
+			{
+				cout << "你好呀！\n" << "我的女朋友~ mua~\n";
+			}
+			else
+			{
+				cout << "你好！" << "\n\t" << user_name << '\n';
+			}
+			go_on = false;
+		}
+	}
+	return 0;
+}
+
+//int main()
+//{
+//	char name[1024] = { 0 };
+//	bool go_on = true;
+//	while (go_on == true)
+//	{
+//		cout << "请输入你的名字:";
+//		cin >> name;
+//		int len = strlen(name);
+//		if (len >= 2)
+//		{
+//			cout << "你好！" << name << '\n';
+//			go_on = false;
+//		}
+//	}
+//	return 0;
+//}
