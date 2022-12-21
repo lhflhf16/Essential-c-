@@ -1,0 +1,36 @@
+#include <string>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main()
+{
+	const int size = 1024;
+	int array_num[size];
+	bool go_on = true;
+	char go;
+	int ix;
+	for ( ix = 0; ix < size && go_on == true; ix++)
+	{
+		cout << "请输入数字:";
+		cin >> array_num[ix];
+		cout << "是否继续Y/N:";
+		cin >> go;
+		if (go == 'n' || go == 'N')
+		{
+			go_on = false;
+		}
+	}
+	vector<int> vector_num(array_num,array_num+ix);
+	int jx;
+	int sum1 = 0;
+	int sum2 = 0;
+	for (jx = 0; jx < ix; jx++)
+	{
+		sum1 = sum1 + array_num[jx];
+		sum2 = sum2 + vector_num[jx];
+	}
+	cout << "和:" << sum1 << "平均值:" << (double)sum1 / ix;
+	cout << "\n和:" << sum2 << "平均值:" << (double)sum2 / ix<<"\n";
+	return 0;
+}
