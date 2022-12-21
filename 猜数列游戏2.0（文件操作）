@@ -1,0 +1,120 @@
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+int main()
+{
+	//数列元素
+	const int seq_size = 18;
+	int elems_seq[seq_size] = {
+		1, 2, 3,
+		3, 4, 7,
+		2, 5, 12,
+		3, 6, 10,
+		4, 9, 16,
+		5, 12, 22
+	};
+	//每一组数列开始处的下标
+	const int begain = 6;
+	int begain_seq[] = { 0, 3, 6, 9, 12, 15 };
+	//数列类型
+	const int seq_name_size = 6;
+	string seq_name[seq_name_size] = {
+		"Fibonacci",
+		"Lucas",
+		"Pell",
+		"Triangular",
+		"Square",
+		"Pentagonal"
+	};
+	//产生随机数
+	srand((unsigned int)time(NULL));
+
+	//输入名字
+	cout << "请输入你的名字:";
+	string user_name;
+	cin >> user_name;
+	//记录数据
+	int num_tries=0;
+	int num_right=0;
+	double score=0.0;
+	//读取文件中的数据
+	ifstream infile("seq.txt");
+	if (!infile)
+	{
+		//读取失败，说明是新用户，什么都不做
+		;
+	}
+	//读取成功，需要输入数据
+	string name;
+	int ut;
+	int ur;
+	while (infile >> name)
+	{
+		infile >> ut >> ur;
+		if (name == user_name)
+		{
+			cout << "欢迎回来:" << user_name
+				<< "\n你当前答题次数为:" << ut << ";答对次数为:" << ur << "\n";
+			num_tries = ut;
+			num_right = ur;
+		}
+	}
+	bool next_seq = true;
+	char user_more;
+	while (next_seq == true)
+	{
+		int seq_idex = rand() % begain;
+		bool got_it = false;
+		bool go_for_it = true;
+		int max = 3;
+		while (got_it == false && go_for_it == true)
+		{
+			num_tries++;
+			max--;
+			int user_guess;
+			cout << "数列的前两个数为:" << elems_seq[begain_seq[seq_idex]] << "," << elems_seq[begain_seq[seq_idex] + 1]
+				<< "\n请猜测下一个数:";
+			cin >> user_guess;
+			if (user_guess == elems_seq[begain_seq[seq_idex] + 2])
+			{
+				num_right++;
+				cout << "恭喜你!猜对了" << ",当前数列名为:" << seq_name[begain_seq[seq_idex] / 3] << '\n';
+				got_it = true;
+			}
+			else
+			{
+				if (max > 0)
+				{
+					cout << "猜错了!你还有" << max << "次机会\n";
+					cout << "是否从新猜测(Y/N):";
+					cin >> user_more;
+					if (user_more == 'N' || user_more == 'n')
+					{
+						go_for_it = false;
+					}
+				}
+				else
+				{
+					cout << "机会没有了\n";
+					break;
+				}
+			}
+		}
+		cout << "是否继续猜测其他数列(Y/N):";
+		cin >> user_more;
+		if (user_more == 'N' || user_more == 'n')
+		{
+			next_seq = false;
+		}
+	}
+	ofstream outfile("seq.txt");
+	outfile << user_name << ' ' << num_tries << ' ' << num_right << endl;
+	score = (double)num_right / num_tries;
+	cout << user_name << ":你当前得分为:\t" << score<<'\n';
+	return 0;
+}
