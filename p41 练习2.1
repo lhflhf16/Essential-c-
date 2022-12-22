@@ -1,0 +1,83 @@
+bool fibonacci_elem(int pos, int &elem);
+bool print_fibonacci(int pos);
+bool print();
+
+int main()
+{
+	int pos;
+	//print()替换为cout<<"请输入位置:";效果相同。
+	while (print() && cin >> pos)
+	{
+		
+		int elem;
+		if (fibonacci_elem(pos, elem))
+		{
+			cout << "elem # " << pos << ':' << elem << endl;
+			print_fibonacci(pos);
+		}
+		else
+		{
+			cout << "无法获得elem # " << pos << "处的值" << endl;
+		}
+	}
+	return 0;
+}
+
+bool fibonacci_elem(int pos,int &elem)
+{
+	//判断pos的合理性
+	if (pos <= 0 || pos > 1024)
+	{
+		elem = 0;
+		return false;
+	}
+	int n_1 = 1;
+	int n_2 = 1;
+	elem = 1;
+	for (int ix = 3; ix <= pos; ix++)
+	{
+		elem = n_1 + n_2;
+		n_1 = n_2;
+		n_2 = elem;
+	}
+	return true;
+}
+
+bool print_fibonacci(int pos)
+{
+	//判断位置合理性
+	if (pos <= 0 || pos > 1024)
+	{
+		cout << "位置不合理" << endl;
+		return false;
+	}
+	cout << "fibonacci数列的前" << pos << "项为:" << endl;
+	switch (pos)
+	{
+	default:
+	case 2:
+		cout << "1 ";
+	case 1:
+		cout << "1 ";
+		break;
+	}
+	int elem;
+	int n_1 = 1;
+	int n_2 = 1;
+	for (int ix = 3; ix <= pos; ix++)
+	{
+		elem = n_1 + n_2;
+		n_1 = n_2;
+		n_2 = elem;
+		//打印十个换行
+		cout << elem << (ix % 10 ? ' ' : '\n');
+	}
+	cout << endl;
+	return true;
+}
+
+bool print()
+{
+	cout << "请输入位置:";
+	return true;
+}
