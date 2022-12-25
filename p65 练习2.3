@@ -1,0 +1,67 @@
+#include <vector>
+#include <string>
+#include <iostream>
+using namespace std;
+
+bool calc_elem(vector<int>& vec, int pos);
+void real_calc_elem(vector<int>& vec, int pos);
+void display_elems(vector<int>& vec, const string& tital, ostream& os = cout);//os默认输出到屏幕
+
+bool calc_elem(vector<int>& vec, int pos)
+{
+	if (pos <= 0 || pos > 64)
+	{
+		cout << "位置" << pos << "不合法" << endl;
+		return false;
+	}
+	//当pos小于等于容器的大小，说明不用增加容器直接使用就行
+	if ((int)vec.size() < pos)
+	{
+		real_calc_elem(vec, pos);
+	}
+	return true;
+}
+
+void real_calc_elem(vector<int>& vec, int pos)
+{
+	//ix是数列元素的位置
+	for (int ix = vec.size() + 1; ix <= pos; ix++)
+	{
+		vec.push_back(ix*(3 * ix - 1) / 2);
+	}
+}
+
+
+void display_elems(vector<int>& vec, const string& tital, ostream& os)
+{
+	os << tital << endl;
+	//ix为vector<int>容器下标
+	for (int ix = 0; ix < (int)vec.size(); ix++)
+	{
+		os << vec[ix] << ' ';
+	}
+	os << endl;
+}
+
+int main()
+{
+	vector<int> vec;
+	const string tital = ("Pentagonal数列元素:");
+	if (calc_elem(vec, 0))
+	{
+		display_elems(vec, tital);
+	}
+	if (calc_elem(vec, 8))
+	{
+		display_elems(vec, tital);
+	}
+	if (calc_elem(vec, 16))
+	{
+		display_elems(vec, tital);
+	}
+	if (calc_elem(vec, 100))
+	{
+		display_elems(vec, tital);
+	}
+	return 0;
+}
