@@ -1,0 +1,131 @@
+#include <iostream>
+#include <vector>
+#include <list>
+#include <algorithm>
+#include <functional>
+using namespace std;
+
+vector<int> filter(vector<int>& vec, int val, bool(*pred)(int, int));
+vector<int> filter(vector<int>& vec, int val, less<int>& lt);
+int count_occurs(const vector<int>& vec, int val);
+inline bool less_than(int v1, int v2);
+
+template<typename type>
+void display(type& p, int size, ostream& os = cout);
+
+template<typename Iterator>
+void display(Iterator first, Iterator last, ostream& os = cout);
+
+template<typename IN_Iterator, typename OUT_Iterator, typename valtype, typename cmptype>
+OUT_Iterator filter(IN_Iterator first, IN_Iterator last, OUT_Iterator dest, valtype val, cmptype lt);
+
+int main()
+{
+	//原始数据
+	int darray[] = { 1, 2, 3, 4, 5, 6, 7, 9, 10 };
+	const int sz = sizeof(darray) / sizeof(darray[0]);
+	display(darray, sz);
+	vector<int> dvec(darray, darray + sz);
+	display(dvec.begin(),dvec.end());
+	list<int> dlist(darray, darray + sz);
+	display(dlist.begin(),dlist.end());
+
+	//过滤后的数据
+	int ret_arr[sz] = { 0 };
+	vector<int> ret_vec(sz);
+	list<int> ret_list(sz);
+
+	//过滤方法
+	//less<int> ld;
+	greater<int> gd;
+
+	filter(darray, darray + sz, ret_arr, 5, gd);
+	display(ret_arr, sz);
+
+	filter(dvec.begin(), dvec.end(), ret_vec.begin(), 5, gd);
+	display(ret_vec.begin(),ret_vec.end());
+
+	filter(dlist.begin(), dlist.end(), ret_list.begin(), 5, gd);
+	display(ret_list.begin(),ret_list.end());
+	return 0;
+}
+
+//使filter更加通用(IN_Iterator（泛型指针） 要查找容器的范围，OUT_Iterator（泛型指针） 存储符合要求数据的容器)
+//valtype 对比数的类型，cmptype 对比方法的类型
+template<typename IN_Iterator, typename OUT_Iterator, typename valtype, typename cmptype>
+OUT_Iterator filter(IN_Iterator first, IN_Iterator last, OUT_Iterator dest, const valtype val, cmptype lt)
+{
+	OUT_Iterator tmp = dest;
+	while ((first = find_if(first, last, bind2nd(lt, val))) != last)//find_if每次都会把符合要求的值的泛型指针返回，找不到返回last。
+	{
+		*dest++ = *first++;
+	}
+	return tmp;
+}
+
+template<typename Iterator>
+void display(Iterator first, Iterator last, ostream& os)
+{
+	while (first != last)
+	{
+		os << *first << ' ';
+		first++;
+	}
+	os << endl;
+}
+
+template<typename type>
+void display(type& p, int size, ostream& os)
+{
+	for (int ix = 0; ix < size; ix++)
+	{
+		os << p[ix] << ' ';
+	}
+	os << endl;
+}
+
+//在vec容器中寻找满足条件的数，并存放到另一个容器中，比较方法通过函数对象实现
+vector<int> filter(vector<int>& vec, int val, less<int>& lt)
+{
+	vector<int>::iterator it = vec.begin();
+	vector<int> tmp;
+	while ((it = find_if(it, vec.end(), bind2nd(lt, val))) != vec.end())
+	{
+		tmp.push_back(*it);
+		it++;
+	}
+	return tmp;
+}
+
+//在vec容器中寻找于目标数相等的数，并返回容器中这个数的数量
+int count_occurs(const vector<int>& vec, int val)
+{
+	vector<int>::const_iterator it = vec.begin();
+	int occurs_count = 0;
+	while ((it = find(it, vec.end(), val)) 
+		!= vec.end())
+	{
+		occurs_count++;
+		it++;
+	}
+	return occurs_count;
+}
+
+inline bool less_than(int v1, int v2)
+{
+	return (v1 < v2 ? true : false);
+}
+
+//在vec容器中寻找满足条件的数，并存放到另一个容器中，比较方法通过函数指针实现
+vector<int> filter(vector<int>& vec, int val, bool(*pred)(int, int))
+{
+	vector<int> tmp;
+	for (int ix = 0; ix < (int)vec.size(); ix++)
+	{
+		if (pred(vec[ix], val))
+		{
+			tmp.push_back(vec[ix]);
+		}
+	}
+	return tmp;
+}
