@@ -1,0 +1,78 @@
+#include <set>
+#include <map>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <iterator>
+#include <fstream>
+#include <algorithm>
+using namespace std;
+
+void pross_file(vector<string>& svec, ifstream& in_file);
+void svec_sort(vector<string>& svec);
+void svec_sort_second(vector<string>& svec);
+template<typename Iterator>
+void display(Iterator first, Iterator last, ostream& os = cout);
+
+class LessThan{
+public:
+	bool operator()(const string& s1, const string& s2)
+	{
+		return (s1.size() < s2.size() ? true : false);
+	}
+};
+
+int main()
+{
+	//读取文件内容到vector中
+	vector<string> svec;
+	ifstream in_file("input_file.txt");
+	if (!in_file)
+	{
+		cerr << "文件打开失败" << endl;
+		return -1;
+	}
+	pross_file(svec, in_file);
+
+	//对vector进行sort先按字符串大小排序
+	svec_sort(svec);
+
+	//对vector按字符串长度排序（第一次排序，是为了当字符串长度相同时，按字符串大小排序）
+	svec_sort_second(svec);
+
+	//打印vector
+	ofstream out_file("out_file.txt");
+	display(svec.begin(), svec.end(), out_file);
+	return 0;
+}
+
+void pross_file(vector<string>& svec, ifstream& in_file)
+{
+	string str;
+	while (in_file >> str)
+	{
+		svec.push_back(str);
+	}
+}
+
+void svec_sort(vector<string>& svec)
+{
+	sort(svec.begin(), svec.end());
+}
+
+void svec_sort_second(vector<string>& svec)
+{
+	sort(svec.begin(), svec.end(), LessThan());
+}
+
+template<typename Iterator>
+void display(Iterator first, Iterator last, ostream& os)
+{
+	int count = 0;
+	for (; first != last; first++)
+	{
+		count++;
+		os << *first << (count % 8 ? ' ' : '\n');
+	}
+	os << endl;
+}
