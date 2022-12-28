@@ -1,0 +1,105 @@
+#include <set>
+#include <map>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <iterator>
+#include <fstream>
+using namespace std;
+
+void set_exclusion(set<string>& word_exclusion);
+void process_file(map<string, int>& word, const set<string>& word_exclusion, ifstream& in_file);
+bool search_map(const map<string, int>& word);
+void display_map(const map<string, int>& word, ostream& os = cout);
+
+int main()
+{
+	//在set中添加排除单字
+	set<string> word_exclusion;
+	set_exclusion(word_exclusion);
+
+	//从文件输入到map中
+	ifstream in_file("input_file.txt");
+	if (!in_file)
+	{
+		cout << "文件打开失败" << endl;
+		return -1;
+	}
+	map<string, int> word;
+	process_file(word, word_exclusion, in_file);
+
+	//查询单字是否位于map
+	bool go_for_it = true;
+	while (go_for_it)
+	{
+		char more;
+		if (search_map(word))
+		{
+			cout << "单字存在" << endl;
+		}
+		else
+		{
+			cout << "单字不存在" << endl;
+		}
+		cout << "是否继续查询Y/N:";
+		cin >> more;
+		if (more == 'N' || more == 'n')
+		{
+			go_for_it = false;
+		}
+	}
+
+	//打印map
+	ofstream out_file("out_file.txt");
+	display_map(word,out_file);
+	return 0;
+}
+
+void set_exclusion(set<string>& word_exclusion)
+{
+	//输入不需要的单字
+	string str;
+	vector<string> svec;
+	cout << "不需要的单字:";
+	while (cin >> str && str != "EOF")
+	{
+		svec.push_back(str);
+	}
+	word_exclusion.insert(svec.begin(), svec.end());
+}
+
+void process_file(map<string, int>& word, const set<string>& word_exclusion, ifstream& in_file)
+{
+	string str;
+	while (in_file >> str)
+	{
+		//当str存在set中则不输入到map中
+		if (word_exclusion.count(str))
+		{
+			continue;
+		}
+		//输入map并记录个数
+		word[str]++;
+	}
+}
+
+bool search_map(const map<string, int>& word)
+{
+	string str;
+	cout << "请输入要查询的单字:";
+	cin >> str;
+	if (word.find(str) != word.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+void display_map(const map<string, int>& word, ostream& os)
+{
+	map<string, int>::const_iterator it = word.begin();
+	for (; it != word.end(); it++)
+	{
+		os << "key: " << it->first << "  value: " << it->second << endl;
+	}
+}
