@@ -1,0 +1,51 @@
+#include <set>
+#include <map>
+#include <string>
+#include <vector>
+#include <deque>
+#include <iostream>
+#include <iterator>
+#include <fstream>
+#include <algorithm>
+using namespace std;
+
+void write(const vector<int>& ivec, ostream_iterator<int>& os_odd, ostream_iterator<int>& os_even);
+
+int main()
+{
+	istream_iterator<int> is(cin);
+	istream_iterator<int> eof;
+	vector<int> ivec;
+	//将输入的数放入deque中
+	copy(is, eof, back_inserter(ivec));
+
+	ofstream outfile_odd("odd.txt");
+	ofstream outfile_even("even.txt");
+
+	ostream_iterator<int> os_odd(outfile_odd, " ");
+	ostream_iterator<int> os_even(outfile_even, "\n");
+
+	//写入
+	write(ivec, os_odd,os_even);
+	return 0;
+}
+
+void write(const vector<int>& ivec, ostream_iterator<int>& os_odd, ostream_iterator<int>& os_even)
+{
+	vector<int>::const_iterator it = ivec.begin();
+	for (; it != ivec.end(); it++)
+	{
+		vector<int>::const_iterator tmp_1 = it;
+		vector<int>::const_iterator tmp_2 = ++tmp_1;
+		//拷贝偶数
+		if (*it % 2 == 0)
+		{
+			copy(it, tmp_2, os_even);
+		}
+		//拷贝奇数
+		else
+		{
+			copy(it, tmp_2, os_odd);
+		}
+	}
+}
