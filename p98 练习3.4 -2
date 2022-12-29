@@ -1,0 +1,38 @@
+#include <iterator>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <fstream>
+#include <functional>
+using namespace std;
+
+class even_elem{
+public:
+	bool operator()(int elem)
+	{
+		return (elem % 2 ? false : true);
+	}
+};
+
+int main()
+{
+	istream_iterator<int> is(cin), eof;
+	vector<int> ivec;
+	copy(is, eof, back_inserter(ivec));
+
+	//调用泛型算法partition()，满足函数对象的放在前面，不满足放在后面，这题偶数在前
+	vector<int>::iterator division = stable_partition(ivec.begin(), ivec.end(), even_elem());
+
+	//输出到文件
+	ofstream out_odd("odd.txt");
+	ofstream out_even("even.txt");
+
+	ostream_iterator<int> os_odd(out_odd, " ");
+	ostream_iterator<int> os_even(out_even, "\n");
+
+	//输出
+	copy(ivec.begin(), division, os_even);
+	copy(division, ivec.end(), os_odd);
+
+	return 0;
+}
