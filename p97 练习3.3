@@ -1,0 +1,162 @@
+#include <set>
+#include <map>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <iterator>
+#include <fstream>
+#include <algorithm>
+using namespace std;
+
+void populate_map(map<string, vector<string>>& family, ifstream& in_file);
+void display_map(const map<string, vector<string>>& family, ostream& os = cout);
+void query_map(const map<string, vector<string>>& family, string& fam_find, ostream& os = cout);
+
+int main()
+{
+	map<string, vector<string>> family;
+	ifstream in_file("family.txt");
+	if (!in_file)
+	{
+		cout << "文件打开失败!" << endl;
+		return -1;
+	}
+	//从文件读取家庭信息
+	populate_map(family, in_file);
+
+	//查找map中的家庭
+	string fam_find;
+	query_map(family, fam_find);
+
+	//打印map
+	display_map(family);
+	return 0;
+}
+
+void populate_map(map<string, vector<string>>& family, ifstream& in_file)
+{
+	string textline;
+
+	//将一行读取出来放到textline字符串中（getline的第三个参数默认为以'\n'作为结尾标志）
+	while (getline(in_file, textline))
+	{
+
+		vector<string> child;
+		string fam_name;
+		//string::size_type 相当于是无符号整形类型（是对象类型），这里创建了三个无符号整形对象
+		string::size_type
+			pos = 0, prev_pos = 0,
+			text_size = textline.size();
+
+		//从pos处开始向后找' '（空格），并返回空格的位置，找不到则返回string::npos
+		while ((pos = textline.find_first_of(' ', pos)) != string::npos)
+		{
+			string::size_type len = pos - prev_pos;
+			//刚开始prev_pos指向0，则说名指向家庭名字
+			if (!prev_pos)
+			{
+				//substr（）从字符串中剪切出新的子串
+				fam_name = textline.substr(prev_pos, len);
+			}
+			else
+			{
+				child.push_back(textline.substr(prev_pos, len));
+			}
+			//pos跳过当前指向的' '，并且改变prev_pos的值，指向下一个子串的开始
+			prev_pos = ++pos;
+		}
+
+		//当后面没有' '时，pos指向的字符串的最后
+		//为了防止（ann '\n')换行之前为空格的情况（getline不会读取结束标志,这里不该有'\n'）
+		//prev_pos!=0是为了防止这种情况（Andy）没有以空格结尾，又没有孩子
+		if (prev_pos < text_size && prev_pos!=0)
+		{
+			child.push_back(textline.substr(prev_pos, pos - prev_pos));
+		}
+
+		if (prev_pos == 0)
+		{
+			fam_name = textline.substr(prev_pos, pos - prev_pos);
+		}
+
+		//再将fam_name 和 child 放到map中
+		if (!family.count(fam_name))
+		{
+			//说明map中没有该家庭，要放入
+			family[fam_name] = child;//fam_name 作为kay；vector容器 child作为value
+		}
+		else
+		{
+			//因为目前无法存kay相同的map
+			cout << fam_name<<"该家庭已存在map中" << endl;
+		}
+	}	
+}
+
+void display_map(const map<string, vector<string>>& family, ostream& os)
+{
+	map<string, vector<string>>::const_iterator it = family.begin(),
+		end_it = family.end();
+	for (; it != end_it; it++)
+	{
+		//家庭无孩子
+		if (it->second.size() == 0)
+		{
+			cout << it->first << "家庭没有孩子" << endl;
+		}
+		else
+		{
+			cout << it->first << "家庭有" << it->second.size() << "个孩子,分别是:";
+			//for循环打印容器
+			vector<string>::const_iterator vec_it = it->second.begin(),
+				vec_end_it = it->second.end();
+			for (; vec_it != vec_end_it; vec_it++)
+			{
+				cout << *vec_it << ' ';
+			}
+			cout << endl;
+		}
+	}
+}
+
+void query_map(const map<string, vector<string>>& family, string& fam_find, ostream& os)
+{
+	map<string, vector<string>>::const_iterator it = family.begin(),
+		end_it = family.end();
+	cout << "请输入要查找的家庭(输入【end】结束查找):";
+	while (1)
+	{
+		cin >> fam_find;
+		if (fam_find == "end")
+		{
+			cout << "结束查找" << endl;
+			break;
+		}
+		if ((it = family.find(fam_find))!=end_it)
+		{
+			//家庭存在，打印家庭
+			//家庭无孩子
+			if (it->second.size() == 0)
+			{
+				cout << it->first << "家庭没有孩子" << endl;
+			}
+			else
+			{
+				cout << it->first << "家庭有" << it->second.size() << "个孩子,分别是:";
+				//for循环打印容器
+				vector<string>::const_iterator vec_it = it->second.begin(),
+					vec_end_it = it->second.end();
+				for (; vec_it != vec_end_it; vec_it++)
+				{
+					cout << *vec_it << ' ';
+				}
+				cout << endl;
+			}
+		}
+		else
+		{
+			//家庭不存在
+			cout << fam_find << "家庭不再map中" << endl;
+		}
+	}
+}
